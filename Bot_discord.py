@@ -12,7 +12,6 @@ import binary
 import stalk
 import flame
 
-
 try:
     f = open('ship.txt', 'rb')
     joueurs = cpk.load(f)
@@ -599,4 +598,8 @@ async def on_message(message):
 tokenf = open("token.txt", 'r')
 token = tokenf.readline()
 tokenf.close()
-client.run(token)
+
+u = str(token.replace("\n", ""))
+
+
+client.run(u)
