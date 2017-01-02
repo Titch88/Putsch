@@ -198,8 +198,6 @@ async def on_message(message):
     #    await client.send_message(client.get_channel('237586260603043842'), module_red.get_new())
 
     #################### DEBUG ZONE ###############################
-    print(client.user.mention)
-    print(msg)
 
     #################################################################
 
@@ -369,7 +367,7 @@ async def on_message(message):
 
 
 
-    elif "quand" in str(msg).lower() :
+    elif "quand" in str(msg).lower() and "?" in str(msg).lower() and message.server.id == "154659533199769601":
         today = date.today()
         aa = today.year + 1
 
