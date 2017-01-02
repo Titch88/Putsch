@@ -596,7 +596,7 @@ async def on_message(message):
             reload(mute)
             await client.send_message(canal, "Merci chef !")
 
-tokenf = open("token.txt", r)
+tokenf = open("token.txt", 'r')
 token = tokenf.readline()
 tokenf.close()
 client.run(token)
