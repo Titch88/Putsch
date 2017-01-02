@@ -408,15 +408,14 @@ async def on_message(message):
                 await client.send_message(canal, str(personne)[:-5] + ", tu as bien enregistré ton anniversaire !")
 
             else:
-                # cible = get_id(split[1])
-                await client.send_message(canal, "Si tu souhaites avoir la date de naissance de cette personne, tu peux aussi lui demander ;) ")
-                # try:
-                #     await client.send_message(canal,
-                #                               str(message.server.get_member(cible))[:-5] + " est né(e) le " + str(
-                #                                   birth[cible]))
-                # except:
-                #     await client.send_message(canal,
-                #                               str(message.server.get_member(cible))[:-5] + " n'est pas dans la bd ....")
+                cible = get_id(split[1])
+                try:
+                    await client.send_message(canal,
+                                              str(message.server.get_member(cible))[:-5] + " est né(e) le " + str(
+                                                  birth[cible]))
+                except:
+                    await client.send_message(canal,
+                                              str(message.server.get_member(cible))[:-5] + " n'est pas dans la bd ....")
 
 
     elif msg.startswith('!hug') and time.time() - hugcd > 60:
