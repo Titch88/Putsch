@@ -77,6 +77,7 @@ def isint(nombre):
 
 
 adminlist = ["141962573900808193", "117636215011803145", "85763178692083712", "163274384021127168", "157175506645680129", "176589945383813120"]
+ignorelist = []
 
 # @requires
 #   @assigns
@@ -185,6 +186,7 @@ async def on_message(message):
     global player
 
     global adminlist
+    global ignorelist
 
 
 
@@ -277,320 +279,334 @@ async def on_message(message):
                 liste_joueurs = []
                 await client.send_message(canal, "Reset reussi !")
 
-    if msg.startswith('!addquote'):
-        if len(msg.split(" ")) > 1:
-            msg = msg.split(" ")
-            msg.pop(0)
-            msg = " ".join(msg)
 
-            q = quote.Quote(msg, heure(), str(message.server.id))
-        else:
-            # recuperer le msg precedent
-            async for message in client.logs_from(canal, limit=2):
-                q = message
+#################### DEBUT DU MESSAGE ##################################
+    if msg.startwith("!ignore") :
+        if personne.id in ignorelist :
+            ignorelist.remove(personne.id)
+            await client.send_message(canal, "Rebienvenue parmi nous :D")
 
-            q = str(q.author).split("&")[0] + " : " + str(q.content)
-            print(" Q EGALE = ", q)
-            q = quote.Quote(q, heure(), str(message.server.id))
-        try:
-
-            quote.addQuote(q)
-            await client.send_message(canal, "Citation enregistrée !")
-        except:
-            await client.send_message(canal, "euh, how about, no ? ")
-
-    elif msg.startswith('!delquote') and str(personne.id) in adminlist :
-        if len(msg.split(" ")) > 1 :
-            rep = quote.delQuote( str(message.server.id),  msg.split(" ")[1])
-            await client.send_message(canal, rep )
-    elif msg.startswith('!delquote') and str(personne.id) not in adminlist :
-        await client.send_message(canal, "permission denied")
-
-
-    elif msg.startswith('!admin') :
-        if str(personne.id) in adminlist :
-            await client.send_message(canal, "vous etes un admin")
         else :
-            await client.send_message(canal, "vous n'etes pas un admin ! ")
+            ignorelist.append(personne.id)
+            await client.send_message(canal, "tu as été enlevé de l'ignorelist")
 
+    else :
+        if personne.id not in ignorelist :
 
+            if msg.startswith('!addquote'):
+                if len(msg.split(" ")) > 1:
+                    msg = msg.split(" ")
+                    msg.pop(0)
+                    msg = " ".join(msg)
 
+                    q = quote.Quote(msg, heure(), str(message.server.id))
+                else:
+                    # recuperer le msg precedent
+                    async for message in client.logs_from(canal, limit=2):
+                        q = message
 
-    elif msg.startswith('!getquote'):
-        msg = str(msg)
-        print("msg = ", msg)
-        msg = msg.split(" ")
-        msg.pop(0)
-        msg = " ".join(msg)
-        tmp = quote.getQuote(str(message.server.id), msg)
-        await client.send_message(canal, tmp[0])
-
-    elif msg.startswith('!whenquote'):
-        msg = msg.split(" ")
-        if len(msg) > 1:
-            await client.send_message(canal, quote.whenQuote(str(message.server.id), msg[1]))
-    elif msg.startswith('!countquote'):
-        await client.send_message(canal, "Nombre de quotes pour " + serveur + " : " + str(
-            quote.countQuote(str(message.server.id))))
-
-    elif msg.startswith('!azerty') :
-        splt = msg.split(" ")
-        print(splt)
-        if len(splt) > 1 :
-            cible = get_id(splt[1])
-            prs = message.server.get_member(cible)
-            await client.send_message(canal, stalk.get(prs)[0])
-
-
-    elif msg.startswith('fuck') :
-        await client.send_typing(canal)
-        await asyncio.sleep(5)
-        await client.send_message(canal, "Nom de dieu de putain de bordel de merde de saloperie de connard d'enculé de ta mère" )
-
-    elif msg.startswith('!flame') :
-        await client.send_typing(canal)
-        await asyncio.sleep(5)
-        await client.send_message(canal, flame.generer())
-
-
-
-
-    elif msg.startswith('!mute') and "Titch" in str(personne) or msg.startswith('!unmute') and "Titch" in str(personne):
-        msg = msg.split(' ')
-        if len(msg) > 1:
-            id_cible = get_id(msg[1])
-            cible = "ce mec"
-            if msg[0] == '!mute':
-                await client.send_message(canal, mute.add_mute('mutes.txt', id_cible, str(cible)))
-            if msg[0] == '!unmute':
-                await client.send_message(canal, mute.del_mute('mutes.txt', id_cible + "\n", str(cible)))
-
-
-
-    elif "quand" in str(msg).lower() and "?" in str(msg).lower() and message.server.id == "154659533199769601":
-        today = date.today()
-        aa = today.year + 1
-
-        await client.send_message(canal, "Avant "+str(aa)+" !" )
-
-
-    elif " yo " in str(msg).lower() and rand.randint(0, 5) == 2 or "yo" in str(msg).lower() and len(
-            str(msg).split(" ")) < 3 and rand.randint(0, 5) == 2:
-        await client.send_message(canal, "Kai watch !")
-    elif 'lenny' in str(msg):  # lenny
-        await client.send_message(canal, " ( ͡° ͜ʖ ͡°)")
-
-    elif msg.startswith('help'):
-        splt = msg.split(" ")
-        if len(splt) == 1:
-            await client.send_message(canal, help_putsch.get_help())
-        else:
-            await client.send_message(canal, help_putsch.get_help(splt[1]))
-
-
-    elif msg.startswith('!birth'):
-        split = msg.split(" ")
-        if len(split) == 1:
-            try:
-                await client.send_message(canal, str(personne)[:-5] + " est né(e) le " + str(birth[personne.id]))
-            except:
-                await client.send_message(canal,
-                                          str(personne)[:-5] + ", utilise ```!birth jj/mm/aaaa``` pour t'enregistrer !")
-
-        else:
-            if isBirthDay(split[1]):
-                birth[personne.id] = split[1]
-                g = open('birth.txt', 'wb')
-                cpk.dump(birth, g)
-                g.close()
-                await client.send_message(canal, str(personne)[:-5] + ", tu as bien enregistré ton anniversaire !")
-
-            else:
-                cible = get_id(split[1])
+                    q = str(q.author).split("&")[0] + " : " + str(q.content)
+                    print(" Q EGALE = ", q)
+                    q = quote.Quote(q, heure(), str(message.server.id))
                 try:
-                    await client.send_message(canal,
-                                              str(message.server.get_member(cible))[:-5] + " est né(e) le " + str(
-                                                  birth[cible]))
+
+                    quote.addQuote(q)
+                    await client.send_message(canal, "Citation enregistrée !")
                 except:
-                    await client.send_message(canal,
-                                              str(message.server.get_member(cible))[:-5] + " n'est pas dans la bd ....")
+                    await client.send_message(canal, "euh, how about, no ? ")
+
+            elif msg.startswith('!delquote') and str(personne.id) in adminlist :
+                if len(msg.split(" ")) > 1 :
+                    rep = quote.delQuote( str(message.server.id),  msg.split(" ")[1])
+                    await client.send_message(canal, rep )
+            elif msg.startswith('!delquote') and str(personne.id) not in adminlist :
+                await client.send_message(canal, "permission denied")
 
 
-    elif msg.startswith('!hug') and time.time() - hugcd > 60:
-        split = msg.split(" ")
-        hugcd = time.time()
-        print(split)
-        for f in message.server.emojis:
-            if f.name == "DeterminationSOUL":
-                emote = f
-
-        if len(split) > 1:
-            cible = split[1]
-            print(cible)
-            if "everyone" in cible.lower():
-                cible = "@everyone"
-                send = "OPEN CALINS  !!!! " + mention(personne.id) + " fait un gros calin à " + str(
-                    cible) + " ! " + str(emote) + " "
-
-            else:
-                cible = mention(get_id(str(cible)))
-                send = mention(personne.id) + " fait un gros calin à " + str(cible) + " ! " + str(emote) + " "
-
-            with open('/home/titch/hug.gif', 'rb') as f:
-                await client.send_file(canal, f, content=send)
-        else:
-            async for message in client.logs_from(canal, limit=10):
-                q = message
-                if message.author != personne:
-                    q = message
-                    break
-            cible = q.author
-            with open('/home/titch/hug.gif', 'rb') as f:
-                await client.send_file(canal, f, content=mention(personne.id) + " fait un gros calin à " + mention(
-                    cible.id) + " ! " + str(emote) + " ")
-
-
-
-    elif msg.startswith('!ship') and int(canal.id) == 240835193550667777:
-        split = msg.split(" ")
-        if len(split) > 1:
-            if isint(split[1]):
-                nbr = int(split[1])
-                if nbr > 5:
-                    nbr = 5
-
-                tmp = []
-                players = list(joueurs)
-                for f in range(nbr):
-                    tmp.append(players.pop(rand.randint(0, len(players) - 1)))
-                res = ""
-                for f in tmp:
-                    res = res + "**" + f + "** ``x`` "
-
-                await client.send_message(canal, res[:-6])
-            else:
-                if len(split) > 2:
-                    if split[1] == "undr":
-                        if isint(split[2]):
-                            nbr = int(split[2])
-                            if nbr > 5:
-                                nbr = 5
-                            tmp = []
-                            players = list(joueurs)
-                            persos = [" Dacticiel ", "Culgore ", "Puissang ", "Cucticiel ", "Meurtpas ",
-                                      " Meurtpas la Démorte ", " Ondine la Démorte ", " Perso ", " Frisquet ",
-                                      " Tonne de metta ", " Tonedemeta ", " Rencontréunetonne ", " Rencontrébeaucoup ",
-                                      " AlphysDeputt ", " Fleurette ", " Kappa Fleurette ",
-                                      " Fleurette Boutiquedeclichés ", " Excepté ", " Parchemin ", " Sieste",
-                                      "poignarde", "regarde", " Repognarder ", " McSlip ", " Trodéso ",
-                                      " Chienportant ", " Chienple ", " Mannequinsensé ", " Fou crétin ",
-                                      " Mannequinandouille ", " Mannequimbécile ", " Manchérubin ", " Manchiard ",
-                                      " Manchôme ", " Grillerautour ", " Réservirène ", " Jérigolé ", " Soleignard ",
-                                      " Geintbeaucoup ", " Grenouilleça ", " Minuscumoule ", " Ptita ", " Tamoyen ",
-                                      " Grauta ", " Grota ", " Fougique ", " Pyrocorde ", " Tête mémoire ",
-                                      " Légumoïde ", " Neigecanard ", " Canetoneige ", " Froidcanard ", " Canetofroid ",
-                                      " Laveutoa ", " Chapôglace ", " Chapôgelé ", " Aviondere ", " Tsunderport ",
-                                      " Muffet à volonté ", " Muffête ", " Ognon", "san ", " Volcanaille ",
-                                      " Parsniquer ", " Giftrotte ", " Reinoël ", " Cerf Noël ", " Pain au citron ",
-                                      " Personnerivière ", " Rivièreindividu ", " Ruissindividu ", " Individuvial ",
-                                      " Personaffluent ", " Toby Renard ", " Toby SiècleRenard ", " Chieant ",
-                                      " Cabommerdant ", " Caninsupportable ", " Piafaucheur ", " A.B Fantômeurt ",
-                                      " A.B Fantômains ", " Gazétoile"]
-                            print(players)
-                            for f in range(nbr):
-                                if f % 2:
-                                    tmp.append(players.pop(rand.randint(0, len(players) - 1)))
-                                else:
-                                    tmp.append(persos.pop(rand.randint(0, len(persos) - 1)))
-                            res = ""
-                            for f in tmp:
-                                res = res + "**" + f + "** ``x`` "
-
-                            await client.send_message(canal, res[:-6])
-
-
-    elif msg.startswith('!blind'):
-        args = msg.split(" ")
-        if args[1] == "join":
-            ppl = str(personne)[:-5]
-            if ppl not in liste_joueurs:
-                liste_joueurs.append(ppl)
-                await client.send_message(canal, ppl + " a rejoint la partie !")
-            else:
-                liste_joueurs.remove(ppl)
-                await client.send_message(canal, ppl + " a quitté la partie !")
-
-        elif args[1] == "start" and len(liste_joueurs) >= 1 and InGame == 0:
-            await client.send_message(canal, "La partie va commencer, les joueurs sont : " + ", ".join(liste_joueurs))
-            # Commencer la partie
-            InGame = 1
-            chann_blind = client.get_channel("164040287071633408")
-            voice = await client.join_voice_channel(chann_blind)
-            Game = blind.Game(liste_joueurs, voice)
-            player = await voice.create_ytdl_player(playlist.current.url)
-            player.start()
-            await client.send_message(canal, "Et c'est parti, chanson 1 !")
-
-        elif args[1] == "list":
-            await client.send_message(canal, "Liste des joueurs : " + ", ".join(liste_joueurs))
-
-        elif args[1] == "reset":
-            Ingame = 0
-            Game = None
-            liste_joueurs = []
-            await client.send_message(canal, "Done !")
-
-    elif "[[" in str(msg) and "]]" in str(msg):
-        splt = str(msg).split(" ")
-        for f in splt:
-            if "[[" in f[:2] and "]]" in f[-2:]:
-                await client.send_message(canal, "<http://fr.undertale.wikia.com/wiki/" + f[2:-2] + ">")
-
-
-    elif msg.startswith('!meow'):
-        await client.send_message(canal, meow())
-
-    elif binary.is_binary(str(msg)):
-        await client.send_message(canal, binary.convert_from_ascii(str(msg)))
-
-    elif msg.startswith('!date'):
-        spl = msg.split(" ")
-        if len(spl) >= 2:
-            print(spl[1])
-            print(get_id(spl[1]))
-            print(str(message.server.get_member(get_id(spl[1]))))
-
-            personne = message.server.get_member(get_id(spl[1]))
-        date_serv = personne.joined_at
-        date_ = personne.created_at
-        cnt = str(personne) + " a rejoint le serveur le : " + str(
-            date_serv) + "\n et a créé son compte discord le " + str(date_)
-
-        await client.send_message(canal, cnt)
-
-
-    elif client.user.mention in str(msg.replace("!", "")) :
-        msg = msg.replace("!", "")
-        msg = msg.replace(client.user.mention, "")
-        #cleverbot eventuellement
+            elif msg.startswith('!admin') :
+                if str(personne.id) in adminlist :
+                    await client.send_message(canal, "vous etes un admin")
+                else :
+                    await client.send_message(canal, "vous n'etes pas un admin ! ")
 
 
 
 
+            elif msg.startswith('!getquote'):
+                msg = str(msg)
+                print("msg = ", msg)
+                msg = msg.split(" ")
+                msg.pop(0)
+                msg = " ".join(msg)
+                tmp = quote.getQuote(str(message.server.id), msg)
+                await client.send_message(canal, tmp[0])
+
+            elif msg.startswith('!whenquote'):
+                msg = msg.split(" ")
+                if len(msg) > 1:
+                    await client.send_message(canal, quote.whenQuote(str(message.server.id), msg[1]))
+            elif msg.startswith('!countquote'):
+                await client.send_message(canal, "Nombre de quotes pour " + serveur + " : " + str(
+                    quote.countQuote(str(message.server.id))))
+
+            elif msg.startswith('!azerty') :
+                splt = msg.split(" ")
+                print(splt)
+                if len(splt) > 1 :
+                    cible = get_id(splt[1])
+                    prs = message.server.get_member(cible)
+                    await client.send_message(canal, stalk.get(prs)[0])
+
+
+            elif msg.startswith('fuck') :
+                await client.send_typing(canal)
+                await asyncio.sleep(5)
+                await client.send_message(canal, "Nom de dieu de putain de bordel de merde de saloperie de connard d'enculé de ta mère" )
+
+            elif msg.startswith('!flame') :
+                await client.send_typing(canal)
+                await asyncio.sleep(5)
+                await client.send_message(canal, flame.generer())
 
 
 
 
-    elif "Titch" in str(personne):
+            elif msg.startswith('!mute') and "Titch" in str(personne) or msg.startswith('!unmute') and "Titch" in str(personne):
+                msg = msg.split(' ')
+                if len(msg) > 1:
+                    id_cible = get_id(msg[1])
+                    cible = "ce mec"
+                    if msg[0] == '!mute':
+                        await client.send_message(canal, mute.add_mute('mutes.txt', id_cible, str(cible)))
+                    if msg[0] == '!unmute':
+                        await client.send_message(canal, mute.del_mute('mutes.txt', id_cible + "\n", str(cible)))
 
-        if msg.startswith('!initQuote') :
-            await client.send_message(canal,quote.initialisation() )
 
-        if msg.startswith('!modreload'):
-            reload(quote)
-            reload(admin)
-            reload(mute)
-            await client.send_message(canal, "Merci chef !")
+
+            elif "quand" in str(msg).lower() and "?" in str(msg).lower() and message.server.id == "154659533199769601":
+                today = date.today()
+                aa = today.year + 1
+
+                await client.send_message(canal, "Avant "+str(aa)+" !" )
+
+
+            elif " yo " in str(msg).lower() and rand.randint(0, 5) == 2 or "yo" in str(msg).lower() and len(
+                    str(msg).split(" ")) < 3 and rand.randint(0, 5) == 2:
+                await client.send_message(canal, "Kai watch !")
+            elif 'lenny' in str(msg):  # lenny
+                await client.send_message(canal, " ( ͡° ͜ʖ ͡°)")
+
+            elif msg.startswith('help'):
+                splt = msg.split(" ")
+                if len(splt) == 1:
+                    await client.send_message(canal, help_putsch.get_help())
+                else:
+                    await client.send_message(canal, help_putsch.get_help(splt[1]))
+
+
+            elif msg.startswith('!birth'):
+                split = msg.split(" ")
+                if len(split) == 1:
+                    try:
+                        await client.send_message(canal, str(personne)[:-5] + " est né(e) le " + str(birth[personne.id]))
+                    except:
+                        await client.send_message(canal,
+                                                  str(personne)[:-5] + ", utilise ```!birth jj/mm/aaaa``` pour t'enregistrer !")
+
+                else:
+                    if isBirthDay(split[1]):
+                        birth[personne.id] = split[1]
+                        g = open('birth.txt', 'wb')
+                        cpk.dump(birth, g)
+                        g.close()
+                        await client.send_message(canal, str(personne)[:-5] + ", tu as bien enregistré ton anniversaire !")
+
+                    else:
+                        cible = get_id(split[1])
+                        try:
+                            await client.send_message(canal,
+                                                      str(message.server.get_member(cible))[:-5] + " est né(e) le " + str(
+                                                          birth[cible]))
+                        except:
+                            await client.send_message(canal,
+                                                      str(message.server.get_member(cible))[:-5] + " n'est pas dans la bd ....")
+
+
+            elif msg.startswith('!hug') and time.time() - hugcd > 60:
+                split = msg.split(" ")
+                hugcd = time.time()
+                print(split)
+                for f in message.server.emojis:
+                    if f.name == "DeterminationSOUL":
+                        emote = f
+
+                if len(split) > 1:
+                    cible = split[1]
+                    print(cible)
+                    if "everyone" in cible.lower():
+                        cible = "@everyone"
+                        send = "OPEN CALINS  !!!! " + mention(personne.id) + " fait un gros calin à " + str(
+                            cible) + " ! " + str(emote) + " "
+
+                    else:
+                        cible = mention(get_id(str(cible)))
+                        send = mention(personne.id) + " fait un gros calin à " + str(cible) + " ! " + str(emote) + " "
+
+                    with open('/home/titch/hug.gif', 'rb') as f:
+                        await client.send_file(canal, f, content=send)
+                else:
+                    async for message in client.logs_from(canal, limit=10):
+                        q = message
+                        if message.author != personne:
+                            q = message
+                            break
+                    cible = q.author
+                    with open('/home/titch/hug.gif', 'rb') as f:
+                        await client.send_file(canal, f, content=mention(personne.id) + " fait un gros calin à " + mention(
+                            cible.id) + " ! " + str(emote) + " ")
+
+
+
+            elif msg.startswith('!ship') and int(canal.id) == 240835193550667777:
+                split = msg.split(" ")
+                if len(split) > 1:
+                    if isint(split[1]):
+                        nbr = int(split[1])
+                        if nbr > 5:
+                            nbr = 5
+
+                        tmp = []
+                        players = list(joueurs)
+                        for f in range(nbr):
+                            tmp.append(players.pop(rand.randint(0, len(players) - 1)))
+                        res = ""
+                        for f in tmp:
+                            res = res + "**" + f + "** ``x`` "
+
+                        await client.send_message(canal, res[:-6])
+                    else:
+                        if len(split) > 2:
+                            if split[1] == "undr":
+                                if isint(split[2]):
+                                    nbr = int(split[2])
+                                    if nbr > 5:
+                                        nbr = 5
+                                    tmp = []
+                                    players = list(joueurs)
+                                    persos = [" Dacticiel ", "Culgore ", "Puissang ", "Cucticiel ", "Meurtpas ",
+                                              " Meurtpas la Démorte ", " Ondine la Démorte ", " Perso ", " Frisquet ",
+                                              " Tonne de metta ", " Tonedemeta ", " Rencontréunetonne ", " Rencontrébeaucoup ",
+                                              " AlphysDeputt ", " Fleurette ", " Kappa Fleurette ",
+                                              " Fleurette Boutiquedeclichés ", " Excepté ", " Parchemin ", " Sieste",
+                                              "poignarde", "regarde", " Repognarder ", " McSlip ", " Trodéso ",
+                                              " Chienportant ", " Chienple ", " Mannequinsensé ", " Fou crétin ",
+                                              " Mannequinandouille ", " Mannequimbécile ", " Manchérubin ", " Manchiard ",
+                                              " Manchôme ", " Grillerautour ", " Réservirène ", " Jérigolé ", " Soleignard ",
+                                              " Geintbeaucoup ", " Grenouilleça ", " Minuscumoule ", " Ptita ", " Tamoyen ",
+                                              " Grauta ", " Grota ", " Fougique ", " Pyrocorde ", " Tête mémoire ",
+                                              " Légumoïde ", " Neigecanard ", " Canetoneige ", " Froidcanard ", " Canetofroid ",
+                                              " Laveutoa ", " Chapôglace ", " Chapôgelé ", " Aviondere ", " Tsunderport ",
+                                              " Muffet à volonté ", " Muffête ", " Ognon", "san ", " Volcanaille ",
+                                              " Parsniquer ", " Giftrotte ", " Reinoël ", " Cerf Noël ", " Pain au citron ",
+                                              " Personnerivière ", " Rivièreindividu ", " Ruissindividu ", " Individuvial ",
+                                              " Personaffluent ", " Toby Renard ", " Toby SiècleRenard ", " Chieant ",
+                                              " Cabommerdant ", " Caninsupportable ", " Piafaucheur ", " A.B Fantômeurt ",
+                                              " A.B Fantômains ", " Gazétoile"]
+                                    print(players)
+                                    for f in range(nbr):
+                                        if f % 2:
+                                            tmp.append(players.pop(rand.randint(0, len(players) - 1)))
+                                        else:
+                                            tmp.append(persos.pop(rand.randint(0, len(persos) - 1)))
+                                    res = ""
+                                    for f in tmp:
+                                        res = res + "**" + f + "** ``x`` "
+
+                                    await client.send_message(canal, res[:-6])
+
+
+            elif msg.startswith('!blind'):
+                args = msg.split(" ")
+                if args[1] == "join":
+                    ppl = str(personne)[:-5]
+                    if ppl not in liste_joueurs:
+                        liste_joueurs.append(ppl)
+                        await client.send_message(canal, ppl + " a rejoint la partie !")
+                    else:
+                        liste_joueurs.remove(ppl)
+                        await client.send_message(canal, ppl + " a quitté la partie !")
+
+                elif args[1] == "start" and len(liste_joueurs) >= 1 and InGame == 0:
+                    await client.send_message(canal, "La partie va commencer, les joueurs sont : " + ", ".join(liste_joueurs))
+                    # Commencer la partie
+                    InGame = 1
+                    chann_blind = client.get_channel("164040287071633408")
+                    voice = await client.join_voice_channel(chann_blind)
+                    Game = blind.Game(liste_joueurs, voice)
+                    player = await voice.create_ytdl_player(playlist.current.url)
+                    player.start()
+                    await client.send_message(canal, "Et c'est parti, chanson 1 !")
+
+                elif args[1] == "list":
+                    await client.send_message(canal, "Liste des joueurs : " + ", ".join(liste_joueurs))
+
+                elif args[1] == "reset":
+                    Ingame = 0
+                    Game = None
+                    liste_joueurs = []
+                    await client.send_message(canal, "Done !")
+
+            elif "[[" in str(msg) and "]]" in str(msg):
+                splt = str(msg).split(" ")
+                for f in splt:
+                    if "[[" in f[:2] and "]]" in f[-2:]:
+                        await client.send_message(canal, "<http://fr.undertale.wikia.com/wiki/" + f[2:-2] + ">")
+
+
+            elif msg.startswith('!meow'):
+                await client.send_message(canal, meow())
+
+            elif binary.is_binary(str(msg)):
+                await client.send_message(canal, binary.convert_from_ascii(str(msg)))
+
+            elif msg.startswith('!date'):
+                spl = msg.split(" ")
+                if len(spl) >= 2:
+                    print(spl[1])
+                    print(get_id(spl[1]))
+                    print(str(message.server.get_member(get_id(spl[1]))))
+
+                    personne = message.server.get_member(get_id(spl[1]))
+                date_serv = personne.joined_at
+                date_ = personne.created_at
+                cnt = str(personne) + " a rejoint le serveur le : " + str(
+                    date_serv) + "\n et a créé son compte discord le " + str(date_)
+
+                await client.send_message(canal, cnt)
+
+
+            elif client.user.mention in str(msg.replace("!", "")) :
+                msg = msg.replace("!", "")
+                msg = msg.replace(client.user.mention, "")
+                #cleverbot eventuellement
+
+
+
+
+
+
+
+
+            elif "Titch" in str(personne):
+
+                if msg.startswith('!initQuote') :
+                    await client.send_message(canal,quote.initialisation() )
+
+                if msg.startswith('!modreload'):
+                    reload(quote)
+                    reload(admin)
+                    reload(mute)
+                    await client.send_message(canal, "Merci chef !")
 
 tokenf = open("token.txt", 'r')
 token = tokenf.readline()
