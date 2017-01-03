@@ -281,14 +281,14 @@ async def on_message(message):
 
 
 #################### DEBUT DU MESSAGE ##################################
-    if msg.startwith("!ignore") :
+    if msg.startswith("!ignore") :
         if personne.id in ignorelist :
             ignorelist.remove(personne.id)
             await client.send_message(canal, "Rebienvenue parmi nous :D")
 
         else :
             ignorelist.append(personne.id)
-            await client.send_message(canal, "tu as été enlevé de l'ignorelist")
+            await client.send_message(canal, "CY@")
 
     else :
         if personne.id not in ignorelist :
