@@ -205,11 +205,11 @@ async def on_message(message):
 
 
     test = stalk.test(personne)
-    if test is not None :
-        if len(test) > 2 :
-
-            tmpt = "dis donc toi, t'as vraiment cru que je te verrais pas changer de pseudo ? T'etais pas a l'aise avec ces pseudos ? " + " , ".join(test[-5:-1])
-            await client.send_message(canal, tmpt)
+    # if test is not None :
+    #     if len(test) > 2 :
+    #
+    #         tmpt = "dis donc toi, t'as vraiment cru que je te verrais pas changer de pseudo ? T'etais pas a l'aise avec ces pseudos ? " + " , ".join(test[-5:-1])
+    #         await client.send_message(canal, tmpt)
 
 
 
@@ -281,6 +281,7 @@ async def on_message(message):
 
 
 #################### DEBUT DU MESSAGE ##################################
+
     if msg.startswith("!ignore") :
         if personne.id in ignorelist :
             ignorelist.remove(personne.id)
@@ -589,6 +590,11 @@ async def on_message(message):
                 msg = msg.replace("!", "")
                 msg = msg.replace(client.user.mention, "")
                 #cleverbot eventuellement
+
+            elif msg.startswith("!quit") and str(personne.id) == "141962573900808193" :
+                for f in client.servers :
+                    if f.id == "154659533199769601" :
+                        await client.leave_server(f)
 
 
 
