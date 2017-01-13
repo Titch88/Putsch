@@ -4,7 +4,9 @@ def get_help(topic = "general") :
     if topic == "general" :
         return "**topic d'aides disponibles : ** \
         \n```quote, hug, ship, birth, blind, date, meow ``` \
-        \n Si vous souhaitez etre ignoré par le bot, tapez juste ' !ignore ' "
+        \n Si vous souhaitez etre ignoré par le bot, tapez juste ' !ignore ' \
+        \n https://github.com/Titch88/Putsch "
+
 
     elif topic == "quote" :
         return "```!getquote <machin> : obtenir une quote à propos de machin \
