@@ -436,6 +436,7 @@ async def on_message(message):
             elif msg.startswith('!hug') and time.time() - hugcd > 60:
                 split = msg.split(" ")
                 hugcd = time.time()
+                emote = "♥"
                 print(split)
                 for f in message.server.emojis:
                     if f.name == "DeterminationSOUL":
